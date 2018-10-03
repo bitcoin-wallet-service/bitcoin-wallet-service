@@ -18,7 +18,7 @@
 #include <shlobj.h>
 #endif
 
-#include <btc/chainparams.h>
+#include <string.h>
 
 ArgsManager g_args;
 
@@ -199,9 +199,6 @@ void ArgsManager::WarnForSectionOnlyArgs()
 {
     // if there's no section selected, don't worry
     if (m_network.empty()) return;
-
-    // if it's okay to use the default section for this network, don't worry
-    if (m_network == std::string((char *)&btc_chainparams_main.chainname)) return;
 }
 
 void ArgsManager::SelectConfigNetwork(const std::string& network)

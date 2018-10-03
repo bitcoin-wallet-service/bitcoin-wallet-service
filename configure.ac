@@ -965,10 +965,10 @@ PKG_CONFIG_LIBDIR="$PKGCONFIG_LIBDIR_TEMP"
 
 AC_CONFIG_SUBDIRS([src/univalue])
 
-LIBBTC_CFLAGS='-I$(srcdir)/libbtc/include'
-AC_SUBST(LIBBTC_CFLAGS)
+dnl LIBBTC_CFLAGS='-I$(srcdir)/libbtc/include'
+dnl AC_SUBST(LIBBTC_CFLAGS)
 
-AC_CONFIG_SUBDIRS([src/libbtc])
+dnl AC_CONFIG_SUBDIRS([src/libbtc])
 
 AC_OUTPUT
 

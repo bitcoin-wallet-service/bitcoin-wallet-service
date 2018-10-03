@@ -8,14 +8,13 @@ SUBDIRS = src
 
 export PYTHONPATH
 
-BITCOINCOREINDEXD_BIN=$(top_builddir)/src/$(BITCOINCOREINDEXD_DAEMON_NAME)$(EXEEXT)
+BITCOIN_WALLET_SERVICE_CGI=$(top_builddir)/src/wallet-service-cgi
 
 empty :=
 space := $(empty) $(empty)
 
-$(BITCOINCOREINDEXD_BIN): FORCE
+$(BITCOIN_WALLET_SERVICE_CGI): FORCE
 	$(MAKE) -C src $(@F)
 
 dist_noinst_SCRIPTS = autogen.sh
 
-CLEANFILES = $(OSX_DMG) $(BITCOIN_WIN_INSTALLER)
