@@ -3,9 +3,9 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <logging.h>
+#include <core/logging.h>
 
-#include <utils.h>
+#include <core/utils.h>
 
 #if defined(HAVE_CONFIG_H)
 #include <config/bitcoin-wallet-service-config.h>

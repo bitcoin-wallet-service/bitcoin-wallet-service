@@ -6,7 +6,7 @@
 #ifndef BITCOIN_SYNC_H
 #define BITCOIN_SYNC_H
 
-#include <threadsafety.h>
+#include <core/threadsafety.h>
 
 #include <condition_variable>
 #include <thread>
@@ -68,6 +68,8 @@ public:
     {
         return PARENT::try_lock();
     }
+
+    using UniqueLock = std::unique_lock<PARENT>;
 };
 #undef DEBUG_LOCKORDER
 #ifdef DEBUG_LOCKORDER
@@ -286,5 +288,71 @@ public:
         return fHaveGrant;
     }
 };
+
+/** Wrapper around std::unique_lock style lock for Mutex. */
+template <typename Mutex, typename Base = typename Mutex::UniqueLock>
+class SCOPED_LOCKABLE UniqueLock : public Base
+{
+private:
+    void Enter(const char* pszName, const char* pszFile, int nLine)
+    {
+        EnterCritical(pszName, pszFile, nLine, (void*)(Base::mutex()));
+#ifdef DEBUG_LOCKCONTENTION
+        if (!Base::try_lock()) {
+            PrintLockContention(pszName, pszFile, nLine);
+#endif
+            Base::lock();
+#ifdef DEBUG_LOCKCONTENTION
+        }
+#endif
+    }
+
+    bool TryEnter(const char* pszName, const char* pszFile, int nLine)
+    {
+        EnterCritical(pszName, pszFile, nLine, (void*)(Base::mutex()), true);
+        Base::try_lock();
+        if (!Base::owns_lock())
+            LeaveCritical();
+        return Base::owns_lock();
+    }
+
+public:
+    UniqueLock(Mutex& mutexIn, const char* pszName, const char* pszFile, int nLine, bool fTry = false) EXCLUSIVE_LOCK_FUNCTION(mutexIn) : Base(mutexIn, std::defer_lock)
+    {
+        if (fTry)
+            TryEnter(pszName, pszFile, nLine);
+        else
+            Enter(pszName, pszFile, nLine);
+    }
+
+    UniqueLock(Mutex* pmutexIn, const char* pszName, const char* pszFile, int nLine, bool fTry = false) EXCLUSIVE_LOCK_FUNCTION(pmutexIn)
+    {
+        if (!pmutexIn) return;
+
+        *static_cast<Base*>(this) = Base(*pmutexIn, std::defer_lock);
+        if (fTry)
+            TryEnter(pszName, pszFile, nLine);
+        else
+            Enter(pszName, pszFile, nLine);
+    }
+
+    ~UniqueLock() UNLOCK_FUNCTION()
+    {
+        if (Base::owns_lock())
+            LeaveCritical();
+    }
+
+    operator bool()
+    {
+        return Base::owns_lock();
+    }
+};
+
+template<typename MutexArg>
+using DebugLock = UniqueLock<typename std::remove_reference<typename std::remove_pointer<MutexArg>::type>::type>;
+
+/** Wrapped mutex: supports waiting but not recursive locking */
+typedef AnnotatedMixin<std::mutex> Mutex;
+#define WAIT_LOCK(cs, name) DebugLock<decltype(cs)> name(cs, #cs, __FILE__, __LINE__)
 
 #endif // BITCOIN_SYNC_H

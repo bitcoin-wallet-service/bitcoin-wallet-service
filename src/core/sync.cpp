@@ -2,11 +2,11 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <sync.h>
+#include <core/sync.h>
 
 #include <memory>
 #include <set>
-#include <utils.h>
+#include <core/utils.h>
 
 #include <stdio.h>
 

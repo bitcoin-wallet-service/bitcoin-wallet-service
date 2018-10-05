@@ -10,7 +10,7 @@
 #endif
 
 
-#include <compat.h>
+#include <compat/compat.h>
 
 #include <stdint.h>
 #include <string>

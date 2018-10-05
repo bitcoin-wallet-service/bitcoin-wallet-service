@@ -2,17 +2,19 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include <btcnode.h>
 #include <shutdown.h>
-#include <utils.h>
+#include <core/utils.h>
 
 #ifndef WIN32
 #include <signal.h>
 #endif
 
 #include "fcgio.h"
+#include <sqlite3.h>
 
 #include <univalue.h>
+
+#include <requesthandler.h>
 
 static std::string DEFAULT_DB = "leveldb";
 
@@ -30,6 +32,10 @@ static void registerSignalHandler(int signal, void(*handler)(int))
 static void HandleSIGTERM(int)
 {
     requestShutdown();
+}
+
+bool executeRequest(const UniValue& request) {
+
 }
 
 int main(int argc, char* argv[])
@@ -82,10 +88,11 @@ int main(int argc, char* argv[])
         char * content_buffer = new char[content_length];
         std::cin.read(content_buffer, content_length);
         
-        UniValue uniRequest;
-        uniRequest.read(content_buffer);
+        WalletServiceRequest request;
+        request.setContent(content_buffer);
+        request.execute();
     
-        std::cout << uniRequest.write();
+        std::cout << request.getResponse();
         std::cout << "\n";
         break;
     }

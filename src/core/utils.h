@@ -2,11 +2,11 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOINCORE_INDEXD_UTILS_H
-#define BITCOINCORE_INDEXD_UTILS_H
+#ifndef BITCOIN_WALLET_SERVICE_UTILS_H
+#define BITCOIN_WALLET_SERVICE_UTILS_H
 
-#include <sync.h>
-#include <tinyformat.h>
+#include <core/sync.h>
+#include <core/tinyformat.h>
 
 #include <chrono>
 #include <fstream>
@@ -17,8 +17,35 @@
 #include <string>
 #include <vector>
 
-#include <logging.h>
+#include <core/logging.h>
 
+class UniValue;
+
+/** Convert from one power-of-2 number base to another. */
+template<int frombits, int tobits, bool pad, typename O, typename I>
+bool ConvertBits(const O& outfn, I it, I end) {
+    size_t acc = 0;
+    size_t bits = 0;
+    constexpr size_t maxv = (1 << tobits) - 1;
+    constexpr size_t max_acc = (1 << (frombits + tobits - 1)) - 1;
+    while (it != end) {
+        acc = ((acc << frombits) | *it) & max_acc;
+        bits += frombits;
+        while (bits >= tobits) {
+            bits -= tobits;
+            outfn((acc >> bits) & maxv);
+        }
+        ++it;
+    }
+    if (pad) {
+        if (bits) outfn((acc << (tobits - bits)) & maxv);
+    } else if (bits >= frombits || ((acc << (tobits - bits)) & maxv)) {
+        return false;
+    }
+    return true;
+}
+
+signed char HexDigit(char c);
 template<typename T>
 std::string HexStr(const T itbegin, const T itend, bool fSpaces=false)
 {
@@ -177,4 +204,8 @@ std::ifstream::pos_type filesize(const char* filename);
 void CreateDir(const std::string& path);
 std::string GetDataDir();
 
-#endif // BITCOINCORE_INDEXD_UTILS_H
+void PrintExceptionContinue(const std::exception* pex, const char* pszThread);
+
+UniValue ValueFromAmount(const int64_t& amount);
+
+#endif // BITCOIN_WALLET_SERVICE_UTILS_H

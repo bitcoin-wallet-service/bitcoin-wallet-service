@@ -9,7 +9,7 @@ define(_COPYRIGHT_YEAR, 2018)
 define(_COPYRIGHT_HOLDERS,[The %s developers])
 define(_COPYRIGHT_HOLDERS_SUBSTITUTION,[[Bitcoin Core Developers]])
 AC_INIT([Bitcoin Wallet Service],[_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION],[https://github.com/bitcoin-wallet-service/],[bitcoin-wallet-service],[https://jonasschnelli.ch/])
-AC_CONFIG_SRCDIR([src/main.cpp])
+AC_CONFIG_SRCDIR([src/])
 AC_CONFIG_HEADERS([src/config/bitcoin-wallet-service-config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux/m4])
@@ -738,6 +738,8 @@ else
 fi
 
 AC_CHECK_LIB([fcgi],[FCGI_Accept],FCGI_LIBS="-lfcgi -lfcgi++",AC_MSG_ERROR(libfcgi missing))
+AC_CHECK_LIB([fcgi],[FCGI_Accept],FCGI_LIBS="-lfcgi -lfcgi++",AC_MSG_ERROR(libfcgi missing))
+AC_CHECK_LIB([sqlite3],[sqlite3_open],SQLITE_LIBS='-lsqlite3' , AC_MSG_ERROR([*** Unable to find sqlite3 library]), )
 
 save_CXXFLAGS="${CXXFLAGS}"
 CXXFLAGS="${CXXFLAGS} ${CRYPTO_CFLAGS} ${SSL_CFLAGS}"
@@ -938,6 +940,7 @@ AC_SUBST(TESTDEFS)
 AC_SUBST(EVENT_LIBS)
 AC_SUBST(EVENT_PTHREADS_LIBS)
 AC_SUBST(FCGI_LIBS)
+AC_SUBST(SQLITE_LIBS)
 AC_CONFIG_FILES([Makefile src/Makefile])
 
 dnl boost's m4 checks do something really nasty: they export these vars. As a
@@ -968,7 +971,8 @@ AC_CONFIG_SUBDIRS([src/univalue])
 dnl LIBBTC_CFLAGS='-I$(srcdir)/libbtc/include'
 dnl AC_SUBST(LIBBTC_CFLAGS)
 
-dnl AC_CONFIG_SUBDIRS([src/libbtc])
+ac_configure_args="${ac_configure_args} --disable-shared --with-pic --with-bignum=no --enable-module-recovery --disable-jni"
+AC_CONFIG_SUBDIRS([src/secp256k1])
 
 AC_OUTPUT
 

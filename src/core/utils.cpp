@@ -20,6 +20,8 @@
 
 #include <string.h>
 
+#include <univalue.h>
+
 ArgsManager g_args;
 
 int64_t GetTimeMillis()
@@ -462,4 +464,38 @@ std::vector<unsigned char> ParseHex(const char* psz)
 std::vector<unsigned char> ParseHex(const std::string& str)
 {
     return ParseHex(str.c_str());
+}
+
+static std::string FormatException(const std::exception* pex, const char* pszThread)
+{
+#ifdef WIN32
+    char pszModule[MAX_PATH] = "";
+    GetModuleFileNameA(nullptr, pszModule, sizeof(pszModule));
+#else
+    const char* pszModule = "bitcoin";
+#endif
+    if (pex)
+        return strprintf(
+            "EXCEPTION: %s       \n%s       \n%s in %s       \n", typeid(*pex).name(), pex->what(), pszModule, pszThread);
+    else
+        return strprintf(
+            "UNKNOWN EXCEPTION       \n%s in %s       \n", pszModule, pszThread);
+}
+
+void PrintExceptionContinue(const std::exception* pex, const char* pszThread)
+{
+    std::string message = FormatException(pex, pszThread);
+    LogPrintf("\n\n************************\n%s\n", message);
+    fprintf(stderr, "\n\n************************\n%s\n", message.c_str());
+}
+
+static const int64_t COIN = 100000000;
+UniValue ValueFromAmount(const int64_t& amount)
+{
+    bool sign = amount < 0;
+    int64_t n_abs = (sign ? -amount : amount);
+    int64_t quotient = n_abs / COIN;
+    int64_t remainder = n_abs % COIN;
+    return UniValue(UniValue::VNUM,
+            strprintf("%s%d.%08d", sign ? "-" : "", quotient, remainder));
 }

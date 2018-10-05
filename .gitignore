@@ -98,3 +98,16 @@ test/cache/*
 /doc/doxygen/
 
 contrib/devtools/split-debug.sh
+/src/config/bitcoin-wallet-service-config.h
+/src/config/bitcoin-wallet-service-config.h.in
+/src/config/bitcoincore-indexd-config.h.in
+/src/Makefile~
+/src/wallet-service-cgi
+/src/wallet-service-cgi.fcgi
+/src/wallet-service-cli
+/src/wallet-service-fcgi
+/wallet-service.config
+/wallet-service.creator
+/wallet-service.creator.user
+/wallet-service.files
+/wallet-service.includes

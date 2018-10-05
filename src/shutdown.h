@@ -2,10 +2,10 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOINCORE_INDEXD_SHUTDOWN_H
-#define BITCOINCORE_INDEXD_SHUTDOWN_H
+#ifndef BITCOIN_WALLET_SERVICE_SHUTDOWN_H
+#define BITCOIN_WALLET_SERVICE_SHUTDOWN_H
 
 bool isShutdownRequested();
 void requestShutdown();
 
-#endif // BITCOINCORE_INDEXD_SHUTDOWN_H
+#endif // BITCOIN_WALLET_SERVICE_SHUTDOWN_H

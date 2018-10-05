@@ -4,9 +4,9 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <netaddress.h>
-#include <hash.h>
-#include <utils.h>
-#include <tinyformat.h>
+#include <core/hash.h>
+#include <core/utils.h>
+#include <core/tinyformat.h>
 
 static const unsigned char pchIPv4[12] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xff, 0xff };
 
